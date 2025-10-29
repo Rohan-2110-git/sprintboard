@@ -1,5 +1,5 @@
 image:
-  repo: 590183888289.dkr.ecr.ap-south-1.amazonaws.com/sprintboard-frontend
+  repo: ghcr.io/Rohan-2110-git/sprintboard-frontend
   tag: "latest"
 
 replicaCount: 1
@@ -14,4 +14,5 @@ ingress:
   enabled: true
   host: app.yourdomain.com
 
-imagePullSecret: ecr-creds
+# leave empty for public registries
+imagePullSecret: ""

@@ -14,12 +14,14 @@ spec:
       labels:
         app: {{ include "sprintboard-frontend.name" . }}
     spec:
+      {{- if .Values.imagePullSecret }}
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecret }}
+      {{- end }}
       containers:
         - name: frontend
           image: "{{ .Values.image.repo }}:{{ .Values.image.tag }}"
           imagePullPolicy: IfNotPresent
-          imagePullSecrets:
-            - name: {{ .Values.imagePullSecret | default "" }}
           env:
             - name: NEXT_PUBLIC_API_BASE
               value: "{{ .Values.env.NEXT_PUBLIC_API_BASE }}"

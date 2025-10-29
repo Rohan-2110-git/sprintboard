@@ -14,12 +14,14 @@ spec:
       labels:
         app: {{ include "sprintboard-api.name" . }}
     spec:
+      {{- if .Values.imagePullSecret }}
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecret }}
+      {{- end }}
       containers:
         - name: api
           image: "{{ .Values.image.repo }}:{{ .Values.image.tag }}"
           imagePullPolicy: IfNotPresent
-          imagePullSecrets:
-            - name: {{ .Values.imagePullSecret | default "" }}
           env:
             - name: DATABASE_URL
               value: "{{ .Values.env.DATABASE_URL }}"
