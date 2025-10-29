@@ -1,6 +1,6 @@
 image:
   repo: 590183888289.dkr.ecr.ap-south-1.amazonaws.com/sprintboard-api
-  tag: "dev"
+  tag: "latest"
 
 replicaCount: 1
 
@@ -14,3 +14,5 @@ service:
 ingress:
   enabled: true
   host: api.yourdomain.com
+
+imagePullSecret: ecr-creds

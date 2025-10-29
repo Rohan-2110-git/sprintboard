@@ -18,6 +18,8 @@ spec:
         - name: frontend
           image: "{{ .Values.image.repo }}:{{ .Values.image.tag }}"
           imagePullPolicy: IfNotPresent
+          imagePullSecrets:
+            - name: {{ .Values.imagePullSecret | default "" }}
           env:
             - name: NEXT_PUBLIC_API_BASE
               value: "{{ .Values.env.NEXT_PUBLIC_API_BASE }}"

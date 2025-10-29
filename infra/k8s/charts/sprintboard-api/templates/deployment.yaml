@@ -18,6 +18,8 @@ spec:
         - name: api
           image: "{{ .Values.image.repo }}:{{ .Values.image.tag }}"
           imagePullPolicy: IfNotPresent
+          imagePullSecrets:
+            - name: {{ .Values.imagePullSecret | default "" }}
           env:
             - name: DATABASE_URL
               value: "{{ .Values.env.DATABASE_URL }}"
