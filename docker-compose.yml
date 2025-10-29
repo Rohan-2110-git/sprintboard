@@ -1,0 +1,43 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: sprintboard-api:dev
+    container_name: sprintboard-api
+    environment:
+      - DATABASE_URL=mysql+pymysql://root:rootpass@mysql:3306/sprintboard
+    ports: ["8000:8000"]
+    depends_on: ["mysql"]
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./apps/frontend
+    image: sprintboard-frontend:dev
+    container_name: sprintboard-frontend
+    environment:
+      - NEXT_PUBLIC_API_BASE=http://localhost:8000
+    ports: ["3000:3000"]
+    depends_on: ["api"]
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8.0
+    container_name: sprintboard-mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpass
+      - MYSQL_DATABASE=sprintboard
+    volumes:
+      - dbdata:/var/lib/mysql
+    ports: ["3306:3306"]
+    restart: unless-stopped
+
+  redis:
+    image: redis:7.2
+    container_name: sprintboard-redis
+    ports: ["6379:6379"]
+    restart: unless-stopped
+
+volumes:
+  dbdata:
