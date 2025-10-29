@@ -1,0 +1,32 @@
+name: build-and-push-frontend
+on:
+  push:
+    paths:
+      - "apps/frontend/**"
+      - ".github/workflows/build_frontend.yml"
+  workflow_dispatch:
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      AWS_REGION: ap-south-1
+      ROLE_ARN: arn:aws:iam::590183888289:role/sprintboard-dev-gha-ecr-pusher
+      ECR: 590183888289.dkr.ecr.ap-south-1.amazonaws.com
+      REPO: sprintboard-frontend
+      IMAGE_TAG: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ env.ROLE_ARN }}
+      - name: Login to ECR
+        run: aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR
+      - name: Build
+        run: docker build -t $ECR/$REPO:$IMAGE_TAG -f apps/frontend/Dockerfile apps/frontend
+      - name: Push
+        run: docker push $ECR/$REPO:$IMAGE_TAG
