@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sprintboard-frontend.fullname" . }}
+  labels:
+    app: {{ include "sprintboard-frontend.name" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "sprintboard-frontend.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "sprintboard-frontend.name" . }}
+    spec:
+      containers:
+        - name: frontend
+          image: "{{ .Values.image.repo }}:{{ .Values.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: NEXT_PUBLIC_API_BASE
+              value: "{{ .Values.env.NEXT_PUBLIC_API_BASE }}"
+          ports:
+            - containerPort: 3000
+          readinessProbe:
+            httpGet: { path: /, port: 3000 }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /, port: 3000 }
+            initialDelaySeconds: 15
+            periodSeconds: 20

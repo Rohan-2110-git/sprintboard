@@ -1,0 +1,15 @@
+image:
+  repo: 590183888289.dkr.ecr.ap-south-1.amazonaws.com/sprintboard-frontend
+  tag: "dev"
+
+replicaCount: 1
+
+env:
+  NEXT_PUBLIC_API_BASE: "http://api.yourdomain.com"
+
+service:
+  port: 3000
+
+ingress:
+  enabled: true
+  host: app.yourdomain.com

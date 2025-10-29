@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sprintboard-api.fullname" . }}
+  labels:
+    app: {{ include "sprintboard-api.name" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "sprintboard-api.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "sprintboard-api.name" . }}
+    spec:
+      containers:
+        - name: api
+          image: "{{ .Values.image.repo }}:{{ .Values.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: DATABASE_URL
+              value: "{{ .Values.env.DATABASE_URL }}"
+            - name: PORT
+              value: "{{ .Values.env.PORT }}"
+          ports:
+            - containerPort: 8000
+          livenessProbe:
+            httpGet: { path: /healthz, port: 8000 }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: { path: /readyz, port: 8000 }
+            initialDelaySeconds: 5
+            periodSeconds: 10

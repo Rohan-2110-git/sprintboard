@@ -1,0 +1,4 @@
+apiVersion: v2
+name: sprintboard-frontend
+version: 0.1.0
+type: application

@@ -1,0 +1,16 @@
+image:
+  repo: 590183888289.dkr.ecr.ap-south-1.amazonaws.com/sprintboard-api
+  tag: "dev"
+
+replicaCount: 1
+
+env:
+  DATABASE_URL: "sqlite:///./sprintboard.db"
+  PORT: "8000"
+
+service:
+  port: 8000
+
+ingress:
+  enabled: true
+  host: api.yourdomain.com
