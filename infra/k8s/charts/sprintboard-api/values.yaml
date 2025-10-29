@@ -1,5 +1,5 @@
 image:
-  repo: ghcr.io/Rohan-2110-git/sprintboard-api
+  repo: ghcr.io/rohan-2110-git/sprintboard-api
   tag: "latest"
 
 replicaCount: 1
