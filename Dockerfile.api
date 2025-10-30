@@ -1,0 +1,10 @@
+FROM python:3.11-slim
+WORKDIR /app
+COPY requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt
+# Copy only the API code into /app/app so "app" is the package
+COPY apps/api/ /app/app/
+# If your repo lacks __init__.py, create one so the package is valid
+RUN test -f /app/app/__init__.py || touch /app/app/__init__.py
+ENV PYTHONPATH=/app
+CMD ["uvicorn","app.main:app","--host","0.0.0.0","--port","8000"]
