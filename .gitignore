@@ -20,3 +20,7 @@ dist/
 
 # K8s
 kubeconfig
+
+# local images
+*.tar
+
