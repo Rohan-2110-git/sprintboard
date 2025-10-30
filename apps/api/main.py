@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from db import SessionLocal
-from .models import Task
+from models import Task
 
 app = FastAPI(title="SprintBoard API")
 
