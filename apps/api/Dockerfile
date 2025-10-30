@@ -1,15 +1,16 @@
 FROM python:3.11-slim
 
-# 1) Setup workdir
 WORKDIR /app
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app
 
-# 2) Install deps (paths are RELATIVE to build context: ./apps/api)
+# copy deps first for better layer cache
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 3) Copy the app source
+# now copy app source (context will be apps/api)
 COPY . .
 
-# 4) Run the API
 ENV PORT=8000
 CMD ["uvicorn","main:app","--host","0.0.0.0","--port","8000"]
