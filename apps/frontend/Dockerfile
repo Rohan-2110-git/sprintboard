@@ -1,5 +1,12 @@
+# apps/frontend/Dockerfile
+
 FROM node:20-bullseye-slim AS deps
 WORKDIR /app
+
+# ✨ Add these two lines
+ARG NEXT_PUBLIC_API_BASE
+ENV NEXT_PUBLIC_API_BASE=${NEXT_PUBLIC_API_BASE}
+
 RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt/lists/*
 COPY package.json package-lock.json* ./
 RUN npm ci --no-audit --no-fund --progress=false
