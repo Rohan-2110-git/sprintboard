@@ -1,0 +1,26 @@
+name: Build & Push to GHCR
+on: { push: { branches: [ master, main ] }, workflow_dispatch: {} }
+permissions: { contents: read, packages: write }
+env:
+  REGISTRY: ghcr.io
+  ORG: rohan-2110-git
+  API_IMAGE: ghcr.io/${{ env.ORG }}/sprintboard-api
+  FE_IMAGE: ghcr.io/${{ env.ORG }}/sprintboard-frontend
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build API
+        run: docker build -t $API_IMAGE:latest -f apps/api/Dockerfile apps/api
+      - name: Push API
+        run: docker push $API_IMAGE:latest
+      - name: Build Frontend
+        run: docker build -t $FE_IMAGE:latest -f apps/frontend/Dockerfile apps/frontend
+      - name: Push Frontend
+        run: docker push $FE_IMAGE:latest
