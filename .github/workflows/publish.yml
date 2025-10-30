@@ -57,13 +57,8 @@ jobs:
           file: ./apps/api/Dockerfile
           push: true
           tags: |
-            ${{ env.IMAGE_API }}:latest
-            ${{ env.IMAGE_API }}:sha-${{ github.sha }}
-          labels: |
-            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
-            org.opencontainers.image.revision=${{ github.sha }}
-            org.opencontainers.image.title=sprintboard-api
-            org.opencontainers.image.description=sprintboard
+            ghcr.io/${{ github.repository_owner }}/sprintboard-api:latest
+            ghcr.io/${{ github.repository_owner }}/sprintboard-api:sha-${{ github.sha }}
 
       - name: Build & Push Frontend
         uses: docker/build-push-action@v6
@@ -72,7 +67,7 @@ jobs:
           file: ./apps/frontend/Dockerfile
           push: true
           build-args: |
-            NEXT_PUBLIC_API_BASE=${{ env.NEXT_PUBLIC_API_BASE }}
+            NEXT_PUBLIC_API_BASE=http://3.110.63.62:30081
           tags: |
             ${{ env.IMAGE_FE }}:latest
             ${{ env.IMAGE_FE }}:sha-${{ github.sha }}
