@@ -1,54 +1,25 @@
-name: Publish images to GHCR
+name: publish
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ master, main ]
     paths:
-      - "apps/api/**"
-      - "apps/frontend/**"
+      - "apps/**"
       - ".github/workflows/publish.yml"
   workflow_dispatch:
 
-permissions:
-  contents: read
-  packages: write
-
-# Keep everything lowercase for GHCR tags
-env:
-  ORG: rohan-2110-git
-  IMAGE_API: ghcr.io/rohan-2110-git/sprintboard-api
-  IMAGE_FE: ghcr.io/rohan-2110-git/sprintboard-frontend
-
-  # The API URL that the browser will call (baked into the FE build)
-  NEXT_PUBLIC_API_BASE: http://3.110.63.62:30081
-
 jobs:
-  build:
+  api:
+    name: Build & Push API
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Show workspace tree (debug helper)
-        run: |
-          pwd
-          ls -la
-          ls -la apps || true
-          ls -la apps/api || true
-          ls -la apps/frontend || true
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - uses: actions/checkout@v4
 
       - name: Login to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ env.ORG }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "${{ github.token }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
       - name: Build & Push API
         uses: docker/build-push-action@v6
@@ -57,8 +28,20 @@ jobs:
           file: ./apps/api/Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/sprintboard-api:latest
-            ghcr.io/${{ github.repository_owner }}/sprintboard-api:sha-${{ github.sha }}
+            ghcr.io/${{ toLower(github.repository_owner) }}/sprintboard-api:latest
+            ghcr.io/${{ toLower(github.repository_owner) }}/sprintboard-api:sha-${{ github.sha }}
+
+  frontend:
+    name: Build & Push Frontend
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to GHCR
+        run: echo "${{ github.token }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
       - name: Build & Push Frontend
         uses: docker/build-push-action@v6
@@ -66,13 +49,9 @@ jobs:
           context: ./apps/frontend
           file: ./apps/frontend/Dockerfile
           push: true
+          tags: |
+            ghcr.io/${{ toLower(github.repository_owner) }}/sprintboard-frontend:latest
+            ghcr.io/${{ toLower(github.repository_owner) }}/sprintboard-frontend:sha-${{ github.sha }}
+          # Bake the API base into the Next.js bundle at build time
           build-args: |
             NEXT_PUBLIC_API_BASE=http://3.110.63.62:30081
-          tags: |
-            ${{ env.IMAGE_FE }}:latest
-            ${{ env.IMAGE_FE }}:sha-${{ github.sha }}
-          labels: |
-            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
-            org.opencontainers.image.revision=${{ github.sha }}
-            org.opencontainers.image.title=sprintboard-frontend
-            org.opencontainers.image.description=sprintboard
