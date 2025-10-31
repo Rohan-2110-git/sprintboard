@@ -8,6 +8,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 # copy deps first for better layer cache
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+# copy the API source (the 'app' package and anything else it needs)
+COPY apps/api/ ./ 
 
 # now copy app source (context will be apps/api)
 COPY . .

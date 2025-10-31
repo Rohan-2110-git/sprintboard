@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from sqlalchemy import text
-from db import SessionLocal
+from apps.db import SessionLocal
 from models import Task
 
 app = FastAPI(title="SprintBoard API")
