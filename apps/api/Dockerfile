@@ -1,18 +1,18 @@
+# apps/api/Dockerfile
 FROM python:3.11-slim
 
 WORKDIR /app
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    PYTHONPATH=/app
 
-# copy deps first for better layer cache
+# copy requirements first for caching
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-# copy the API source (the 'app' package and anything else it needs)
-COPY apps/api/ ./ 
 
-# now copy app source (context will be apps/api)
+# copy the API source (context is apps/api)
 COPY . .
 
 ENV PORT=8000
-CMD ["uvicorn","main:app","--host","0.0.0.0","--port","8000"]
+EXPOSE 8000
+
+# IMPORTANT: run as a package module
+# expects FastAPI app at apps/api/app/main.py -> app.main:app
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
